@@ -10,6 +10,7 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from matplotlib.colors import ListedColormap
 import numpy as np
 
 
@@ -27,6 +28,30 @@ def save(data):
     print(f"Data file: {filename}")
 
 
+def munge(data, x=100, reverse=True):
+    """
+    Munge data into 2d array, where x is specified
+    and y is int(len(data)/x).
+
+    If reverse is True, then assume every other line
+    needs to be reversed -- eg, because we're scanning
+    back and forth.
+    """
+    y = int(len(data) / x)
+
+    n = np.empty((y, x))
+    for i in range(int(len(data) / 100)):
+        start = i * 100
+        end = (i + 1) * 100
+        line = data[start:end]
+        if i % 2 == 1 and reverse:
+            line = list(reversed(line))
+
+        n[i] = line
+
+    return n
+
+
 # TODO: Look at
 # https://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
 # for live plotting options.
@@ -35,7 +60,10 @@ def graph(data):
     Graph data in some way
     """
     print(f"Here's a graph!", data)
-    plt.plot(data)
+    gdata = munge(data)
+    plt.pcolormeshh(gdata, cmap="gray")
+    plt.gca().set_aspect("equal")  # show square as square
+    plt.show()
     plt.show()
 
 
@@ -55,8 +83,8 @@ def log_serial(ser):
             print(t)
             DATA.append(t)
         except ValueError:
-            # not a float? silently discard it
-            pass
+            # not a float? just print it
+            print(ser_bytes.decode("utf-8").rstrip("\r\n"))
 
 
 def main():
