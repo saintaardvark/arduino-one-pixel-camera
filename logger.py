@@ -40,9 +40,9 @@ def munge(data, x=100, reverse=True):
     y = int(len(data) / x)
 
     n = np.empty((y, x))
-    for i in range(int(len(data) / 100)):
-        start = i * 100
-        end = (i + 1) * 100
+    for i in range(int(len(data) / x)):
+        start = i * x
+        end = (i + 1) * x
         line = data[start:end]
         if i % 2 == 1 and reverse:
             line = list(reversed(line))
@@ -60,9 +60,9 @@ def graph(data):
     Graph data in some way
     """
     print(f"Here's a graph!", data)
-    gdata = munge(data)
-    plt.pcolormeshh(gdata, cmap="gray")
-    plt.gca().set_aspect("equal")  # show square as square
+    gdata = munge(data, x=1000, reverse=False)
+    plt.pcolormesh(gdata, cmap="gray")
+    # plt.gca().set_aspect("equal")  # show square as square
     plt.show()
     plt.show()
 
@@ -80,7 +80,7 @@ def log_serial(ser):
         ser_bytes = ser.readline()
         try:
             t = float(ser_bytes.decode("utf-8").rstrip("\r\n"))
-            print(t)
+            # print(t)
             DATA.append(t)
         except ValueError:
             # not a float? just print it

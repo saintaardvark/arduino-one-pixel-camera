@@ -25,7 +25,7 @@
 int lightSensor = 0;
 int val = 0;
 int i = 0;
-int SLEEPYTIME = 100;
+int SLEEPYTIME = 10;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -38,14 +38,19 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-	i += 1;
+  i += 1;
   val = 1023 - analogRead(lightSensor);
-	if (i % 100 == 0) {
-		for (int j=0; j < 10; j++) {
-			Serial.println("SLEEPYTIME");
-			delay(1000);
-		}
-	}
-  Serial.println(val);
-  delay(SLEEPYTIME);
+  // 10 seconds divided by SLEEPYTIME
+  if (i % (10 * 1000 / SLEEPYTIME) == 0) {
+    for (int j=0; j < 10; j++) {
+      Serial.println("SLEEPYTIME");
+      delay(1000);
+    }
+  } else {
+    Serial.println(val);
+    if (i % (1000 / SLEEPYTIME ) == 0) {
+      Serial.println("*********************STEP");
+    }
+    delay(SLEEPYTIME);
+  }
 }
