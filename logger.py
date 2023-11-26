@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 # Simple serial logger.  Lots of assumptions.
+#
+# Licensed under GPL v3.0.  See LICENSE.txt for details.
 
 from datetime import datetime
 import serial
