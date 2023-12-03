@@ -5,10 +5,15 @@
 #include <Servo.h>
 
 /* TODO: Rename these to x/y servo */
-Servo myservo1; // x
-Servo myservo2;	// y
+Servo servo_x; // x
+int X_PIN = 9;
+Servo servo_y;	// y
+int Y_PIN = 8;
 int xpos = 0;
 int ypos = 0;
+
+int ygap = 30;
+int xgap = 20;
 
 int lightSensor = 0;
 int val = 0;
@@ -25,12 +30,14 @@ int SERVO_DELAY = 56;
   that down.
  */
 void resetServosSlowly() {
-  for (int i = myservo1.read(); i > 0 ; i--) {
-    myservo1.write(i);
+	Serial.println("About to set x slowly to 0");
+  for (int i = servo_x.read(); i > 0 ; i--) {
+    servo_x.write(i);
     delay(100);
   }
-  for (int i = myservo2.read(); i > 0 ; i--) {
-    myservo1.write(i);
+	Serial.println("About to set y slowly to 0");
+  for (int i = servo_y.read(); i > 0 ; i--) {
+		servo_y.write(i);
     delay(100);
   }
 }
@@ -41,9 +48,12 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
   Serial.println("Hello, world!");
+	Serial.println("setting light sensor...");
   pinMode(lightSensor, INPUT);
-  myservo1.attach(9);  // attaches the servo on pin 9 to the servo object
-  myservo2.attach(8);  // attaches the servo on pin 9 to the servo object
+	Serial.println("attaching X servo...");
+  servo_x.attach(X_PIN);  // attaches the servo on pin 9 to the servo object
+	Serial.println("Attaching Y servo...");
+  servo_y.attach(Y_PIN);  // attaches the servo on pin 9 to the servo object
   resetServosSlowly();
   delay(1000);
 }
@@ -64,22 +74,28 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  for (ypos = 0; ypos <= 1800; ypos += 1) { // goes from 0 degrees to 180 degrees
-    myservo2.writeMicroseconds(MIN_PULSE_WIDTH + ypos); // tell servo to go to position in variable 'pos'
-    for (xpos = 0; xpos <= 1800; xpos += 1) { // goes from 0 degrees to 180 degrees
-      // in steps of 1 degree
-      myservo1.write(MIN_PULSE_WIDTH + xpos); // tell servo to go to position in variable 'pos'
-      delay(SERVO_DELAY); // waits  for the servo to reach the position
+	String msg;
+  for (ypos = 0; ypos <= 900; ypos += (2 * ygap)) {
+		msg = "YYYYY ";
+		msg += String(ypos);
+		Serial.println(msg);
+    servo_y.writeMicroseconds(MIN_PULSE_WIDTH + ypos);
+    for (xpos = 0; xpos <= 1800; xpos += xgap) {
+      servo_x.write(MIN_PULSE_WIDTH + xpos);
+      delay(SERVO_DELAY);
       val = 1023 - analogRead(lightSensor);
       Serial.println(val);
     }
-    for (xpos = 1800; xpos >= 0; xpos -= 1) { // goes from 180 degrees to 0 degrees
-      myservo1.writeMicroseconds(MIN_PULSE_WIDTH + xpos);              // tell servo to go to position in variable 'pos'
-      delay(SERVO_DELAY);                       // waits 15ms for the servo to reach the position
+		Serial.println("ypos ++ ");
+		servo_y.writeMicroseconds(MIN_PULSE_WIDTH + ypos + ygap);
+    for (xpos = 1800; xpos >= 0; xpos -= xgap) {
+      servo_x.writeMicroseconds(MIN_PULSE_WIDTH + xpos);
+      delay(SERVO_DELAY);
       val = 1023 - analogRead(lightSensor);
       Serial.println(val);
     }
-    Serial.println("YYYYY");
   }
+	for (;;) {
+		delay(50000);
+	}
 }
-

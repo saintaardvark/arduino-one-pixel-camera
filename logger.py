@@ -62,7 +62,7 @@ def graph(data):
     Graph data in some way
     """
     print(f"Here's a graph!", data)
-    gdata = munge(data, x=1000, reverse=False)
+    gdata = munge(data, x=91, reverse=True)
     plt.pcolormesh(gdata, cmap="gray")
     # plt.gca().set_aspect("equal")  # show square as square
     plt.show()
@@ -78,6 +78,7 @@ def log_serial(ser):
     - every line is a floating point number
 
     """
+    last = 0
     while True:
         ser_bytes = ser.readline()
         try:
@@ -85,8 +86,11 @@ def log_serial(ser):
             # print(t)
             DATA.append(t)
         except ValueError:
-            # not a float? just print it
+            # not a float? just print it, plus how many samples we have now
             print(ser_bytes.decode("utf-8").rstrip("\r\n"))
+            new_samples = len(DATA) - last
+            print(new_samples)
+            last = len(DATA)
 
 
 def main():
