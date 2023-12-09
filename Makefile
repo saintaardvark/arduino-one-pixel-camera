@@ -19,3 +19,4 @@ ARDMK_DIR     = /home/aardvark/dev/src/github.com/sudar/Arduino-Makefile
 
 
 include $(ARDMK_DIR)/Arduino.mk
+include Makefile.venv

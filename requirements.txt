@@ -1,0 +1,8 @@
+jupyterlab
+jupyter_nbextensions_configurator
+jupyterlab-git
+pandas
+matplotlib
+numpy
+seaborn
+pyserial
