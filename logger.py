@@ -18,8 +18,10 @@ import numpy as np
 
 DATA = []
 
+X_LENGTH = 1801
 
-def save(data):
+
+def save(data: list):
     """
     Save data in some way
     """
@@ -30,7 +32,7 @@ def save(data):
     print(f"Data file: {filename}")
 
 
-def munge(data, x=100, reverse=True):
+def munge(data: list, x: int = 100, reverse: bool = True):
     """
     Munge data into 2d array, where x is specified
     and y is int(len(data)/x).
@@ -57,18 +59,18 @@ def munge(data, x=100, reverse=True):
 # TODO: Look at
 # https://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
 # for live plotting options.
-def graph(data):
+def graph(data: list, x_length: int = X_LENGTH):
     """
     Graph data in some way
     """
-    print(f"Here's a graph!", data)
-    gdata = munge(data, x=91, reverse=True)
+    print(f"Here's a graph!")
+    gdata = munge(data, x=X_LENGTH, reverse=True)
     plt.pcolormesh(gdata, cmap="gray")
     # plt.gca().set_aspect("equal")  # show square as square
     plt.show()
-    plt.show()
 
 
+# TODO: annotation for the ser variable
 def log_serial(ser):
     """
     Do the actual logging.
@@ -77,8 +79,11 @@ def log_serial(ser):
     - every line ends with '\r\n'
     - every line is a floating point number
 
+    returns: x_length, length of each line (eg, number of samples on
+    a single scan line)
     """
     last = 0
+    x_length = 0
     while True:
         ser_bytes = ser.readline()
         try:
@@ -87,10 +92,17 @@ def log_serial(ser):
             DATA.append(t)
         except ValueError:
             # not a float? just print it, plus how many samples we have now
-            print(ser_bytes.decode("utf-8").rstrip("\r\n"))
-            new_samples = len(DATA) - last
-            print(new_samples)
-            last = len(DATA)
+            try:
+                print(ser_bytes.decode("utf-8").rstrip("\r\n"))
+                new_samples = len(DATA) - last
+                print(new_samples)
+                last = len(DATA)
+                if x_length < last:
+                    x_length = last
+            except Exception as e:
+                print(f"Couldn't decode that: {e}")
+                pass
+    return x_length
 
 
 def main():
@@ -98,11 +110,12 @@ def main():
     Main entry point
     """
     ser = serial.Serial("/dev/ttyUSB0", baudrate=9600)
+    x_length = 0
     try:
-        log_serial(ser)
+        x_length = log_serial(ser)
     except KeyboardInterrupt:
         save(DATA)
-        graph(DATA)
+        graph(DATA, x_length=x_length)
         sys.exit()
 
 
