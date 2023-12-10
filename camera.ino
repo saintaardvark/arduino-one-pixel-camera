@@ -9,11 +9,12 @@ int X_PIN = 9;
 
 Servo servo_y;
 int Y_PIN = 8;
+
 int xpos = 0;
 int ypos = 0;
 
-int ygap = 30;
-int xgap = 20;
+int ygap = 1;
+int xgap = 1;
 
 int lightSensor = 0;
 int val = 0;
@@ -23,7 +24,7 @@ int SLEEPYTIME = 10;
 /* microseconds to sleep at each degree.  Since code currently assumes
    10 sec to sweep, that's 10 s / 180 degrees = 56 microseconds
 */
-int SERVO_DELAY = 56;
+int SERVO_DELAY = 15;
 
 /*
   The initial setting of the position to 0 is quite fast; here we slow
@@ -95,6 +96,7 @@ void loop() {
       Serial.println(val);
     }
   }
+	resetServosSlowly();
 	for (;;) {
 		delay(50000);
 	}
