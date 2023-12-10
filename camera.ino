@@ -4,10 +4,10 @@
 
 #include <Servo.h>
 
-/* TODO: Rename these to x/y servo */
-Servo servo_x; // x
+Servo servo_x;
 int X_PIN = 9;
-Servo servo_y;	// y
+
+Servo servo_y;
 int Y_PIN = 8;
 int xpos = 0;
 int ypos = 0;
