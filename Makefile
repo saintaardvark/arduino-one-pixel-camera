@@ -20,5 +20,8 @@ ARDMK_DIR     = /home/aardvark/dev/src/github.com/sudar/Arduino-Makefile
 log:
 	$(VENV)/python ./logger.py
 
+jl:
+	$(VENV)/jupyter-lab
+
 include $(ARDMK_DIR)/Arduino.mk
 include Makefile.venv
