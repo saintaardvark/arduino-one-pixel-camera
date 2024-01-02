@@ -1,19 +1,19 @@
-/*************************************************** 
+/***************************************************
   This is an example for our Adafruit 16-channel PWM & Servo driver
   Servo test - this will drive 8 servos, one after the other on the
   first 8 pins of the PCA9685
 
   Pick one up today in the adafruit shop!
   ------> http://www.adafruit.com/products/815
-  
-  These drivers use I2C to communicate, 2 pins are required to  
+
+  These drivers use I2C to communicate, 2 pins are required to
   interface.
 
-  Adafruit invests time and resources providing this open source code, 
-  please support Adafruit and open-source hardware by purchasing 
+  Adafruit invests time and resources providing this open source code,
+  please support Adafruit and open-source hardware by purchasing
   products from Adafruit!
 
-  Written by Limor Fried/Ladyada for Adafruit Industries.  
+  Written by Limor Fried/Ladyada for Adafruit Industries.
   BSD license, all text above must be included in any redistribution
  ****************************************************/
 
@@ -27,7 +27,7 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 // you can also call it with a different address and I2C interface
 //Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40, Wire);
 
-// Depending on your servo make, the pulse width min and max may vary, you 
+// Depending on your servo make, the pulse width min and max may vary, you
 // want these to be as small/large as possible without hitting the hard stop
 // for max range. You'll have to tweak them as necessary to match the servos you
 // have!
@@ -37,13 +37,29 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define USMAX  2400 // This is the rounded 'maximum' microsecond length based on the maximum pulse of 600
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz updates
 
+/* My servos */
+#define SERVO_X 0
+#define SERVO_Y 1
+
+/* microseconds to sleep at each degree.  Since code currently assumes
+   10 sec to sweep, that's 10 s / 180 degrees = 56 microseconds.
+	 15 microseconds is, what, a quarter of that.
+*/
+#define SERVO_DELAY 100
+#define LIGHT_SENSOR_PIN 0
+
+
 // our servo # counter
 uint8_t servonum = 0;
+uint16_t x_pulselength;
+uint16_t y_pulselength;
+
+// Message string
+String msg;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("8 channel Servo test!");
-
+  Serial.println("Setting up servo controller board...");
   pwm.begin();
   /*
    * In theory the internal oscillator (clock) is 25MHz but it really isn't
@@ -58,7 +74,7 @@ void setup() {
    * 2) Adjust setOscillatorFrequency() until the PWM update frequency is the
    *    expected value (50Hz for most ESCs)
    * Setting the value here is specific to each individual I2C PCA9685 chip and
-   * affects the calculations for the PWM update frequency. 
+   * affects the calculations for the PWM update frequency.
    * Failure to correctly set the int.osc value will cause unexpected PWM results
    */
   pwm.setOscillatorFrequency(27000000);
@@ -71,45 +87,50 @@ void setup() {
 // e.g. setServoPulse(0, 0.001) is a ~1 millisecond pulse width. It's not precise!
 void setServoPulse(uint8_t n, double pulse) {
   double pulselength;
-  
+
   pulselength = 1000000;   // 1,000,000 us per second
   pulselength /= SERVO_FREQ;   // Analog servos run at ~60 Hz updates
-  Serial.print(pulselength); Serial.println(" us per period"); 
+  Serial.print(pulselength); Serial.println(" us per period");
   pulselength /= 4096;  // 12 bits of resolution
-  Serial.print(pulselength); Serial.println(" us per bit"); 
+  Serial.print(pulselength); Serial.println(" us per bit");
   pulse *= 1000000;  // convert input seconds to us
   pulse /= pulselength;
   Serial.println(pulse);
   pwm.setPWM(n, 0, pulse);
 }
 
+void printDebug(String hdr, int deg, uint16_t pulsewidth) {
+	msg = hdr + "  " + String(deg) + " " + String(pulsewidth);
+	Serial.println(msg);
+}
+
 void loop() {
-  // Drive each servo one at a time using setPWM()
-  Serial.println(servonum);
-  for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
-    pwm.setPWM(servonum, 0, pulselen);
-  }
+	// Sweep x...
+	for (int xdeg = 0; xdeg <= 180; xdeg++) {
+		// https://learn.adafruit.com/16-channel-pwm-servo-driver?view=all
+		x_pulselength = map(xdeg, 0, 180, SERVOMIN, SERVOMAX);
+		printDebug("XXXXX", xdeg, x_pulselength);
+		pwm.setPWM(SERVO_X, 0, x_pulselength);
 
-  delay(500);
-  for (uint16_t pulselen = SERVOMAX; pulselen > SERVOMIN; pulselen--) {
-    pwm.setPWM(servonum, 0, pulselen);
-  }
+		// Sweep up y...
+		for (int ydeg = 0; ydeg <= 180; ydeg++) {
+			y_pulselength = map(ydeg, 0, 180, SERVOMIN, SERVOMAX);
+			printDebug("YYYYY", ydeg, y_pulselength);
+			pwm.setPWM(SERVO_Y, 0, y_pulselength);
+			delay(SERVO_DELAY);
+		}
+		// Move one degree x....
+		xdeg++;
+		x_pulselength = map(xdeg, 0, 180, SERVOMIN, SERVOMAX);
+		printDebug("XXXXX", xdeg, x_pulselength);
+		pwm.setPWM(SERVO_X, 0, x_pulselength);
+		// ...then sweep y down:
 
-  delay(500);
-
-  // Drive each servo one at a time using writeMicroseconds(), it's not precise due to calculation rounding!
-  // The writeMicroseconds() function is used to mimic the Arduino Servo library writeMicroseconds() behavior. 
-  for (uint16_t microsec = USMIN; microsec < USMAX; microsec++) {
-    pwm.writeMicroseconds(servonum, microsec);
-  }
-
-  delay(500);
-  for (uint16_t microsec = USMAX; microsec > USMIN; microsec--) {
-    pwm.writeMicroseconds(servonum, microsec);
-  }
-
-  delay(500);
-
-  servonum++;
-  if (servonum > 7) servonum = 0; // Testing the first 8 servo channels
+		for (int ydeg = 180; ydeg >= 0; ydeg--) {
+			y_pulselength = map(ydeg, 0, 180, SERVOMIN, SERVOMAX);
+			printDebug("YYYYY", ydeg, y_pulselength);
+			pwm.setPWM(SERVO_Y, 0, y_pulselength);
+			delay(SERVO_DELAY);
+		}
+	}
 }
