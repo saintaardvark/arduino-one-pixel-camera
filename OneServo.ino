@@ -112,13 +112,14 @@ void setup() {
     Serial.println(F("Attach servo at pin " STR(SERVO1_PIN)));
 #  endif
 #endif
-    if (Servo1.attach(SERVO1_PIN, START_DEGREE_VALUE) == INVALID_SERVO) {
+    if (Servo1.attach(SERVO1_PIN) == INVALID_SERVO) {
         Serial.println(F("Error attaching servo"));
         while (true) {
             blinkLED();
         }
     }
-
+    Servo1.setSpeed(10);
+    Servo1.easeTo(START_DEGREE_VALUE);
     // Wait for servo to reach start position.
     delay(500);
 #if defined(PRINT_FOR_SERIAL_PLOTTER)
@@ -128,13 +129,14 @@ void setup() {
 #endif
 }
 
+/* Aha!  https://github.com/ArminJo/ServoEasing#list-of-easing-functions */
+
 void loop() {
     // Move slow
-#if !defined(PRINT_FOR_SERIAL_PLOTTER)
-    Serial.println(F("Move to 90 degree with 10 degree per second blocking"));
-#endif
-    Servo1.setSpeed(10);  // This speed is taken if no further speed argument is given.
+    Serial.println(F("Move to 90 degree with 1 degree per second blocking"));
+    Servo1.setSpeed(1);  // This speed is taken if no further speed argument is given.
     Servo1.easeTo(90);
+    Servo1.easeTo(0);
 //    Servo1.easeTo(DEFAULT_MICROSECONDS_FOR_90_DEGREE); // Alternatively you can specify the target as microsecond value
 
 #  if !defined(PRINT_FOR_SERIAL_PLOTTER)
