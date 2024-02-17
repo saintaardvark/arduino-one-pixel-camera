@@ -82,8 +82,6 @@ void setup() {
     Serial.begin(115200);
         // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_SERVO_EASING));
-    Serial.println("Brief sleep...then I init/attach");
-    delay(4000);
     /********************************************************
      * Attach servo to pin and set servos to start position.
      * This is the position where the movement starts.
@@ -94,7 +92,6 @@ void setup() {
         }
     }
     Serial.println("That's done!  Moving on...");
-    delay(4000);
 #undef SERVO1_PIN
 #define SERVO1_PIN  0 // we use first port of expander
     Serial.println(F("Attach servo to port 0 of PCA9685 expander"));
@@ -106,10 +103,17 @@ void setup() {
         }
     }
     Serial.println("Okay, attached.  Now to set speed & ease:");
-    delay(4000);
-    Servo1.setSpeed(5);
+    Servo1.setSpeed(10);
     Serial.println("Speed set...");
     delay(4000);
+    /* This is where the big swing happens.  It is probably
+       unavoidable if the arm is far away from its start positiion;
+       see:
+
+       https://forum.arduino.cc/t/why-do-servos-move-when-attached/446181
+       https://forum.arduino.cc/t/arduino-servo-on-startup-servo-motor-moves-to-default-position-too-fast/65528/3
+
+    */
     Servo1.easeTo(START_DEGREE_VALUE);
     // Wait for servo to reach start position.
     delay(500);
@@ -122,6 +126,7 @@ void loop() {
     Serial.println(F("Move to 90 degree with " STR(DEFAULT_SPEED) " degree per second blocking"));
     Servo1.setSpeed(DEFAULT_SPEED);  // This speed is taken if no further speed argument is given.
     Servo1.easeTo(90);
+    Serial.println("That was 90!  Now back to 0");
     Servo1.easeTo(0);
 }
 
