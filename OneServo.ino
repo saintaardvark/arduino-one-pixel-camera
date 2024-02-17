@@ -74,6 +74,7 @@ ServoEasing Servo1;
 #endif
 
 #define START_DEGREE_VALUE  0 // The degree value written to the servo at time of attach.
+#define DEFAULT_SPEED 10
 void blinkLED();
 
 void setup() {
@@ -112,23 +113,10 @@ void setup() {
 
 void loop() {
     // Move slow
-    Serial.println(F("Move to 90 degree with 1 degree per second blocking"));
-    Servo1.setSpeed(20);  // This speed is taken if no further speed argument is given.
+    Serial.println(F("Move to 90 degree with " STR(DEFAULT_SPEED) " degree per second blocking"));
+    Servo1.setSpeed(DEFAULT_SPEED);  // This speed is taken if no further speed argument is given.
     Servo1.easeTo(90);
     Servo1.easeTo(0);
-//    Servo1.easeTo(DEFAULT_MICROSECONDS_FOR_90_DEGREE); // Alternatively you can specify the target as microsecond value
-
-#  if !defined(PRINT_FOR_SERIAL_PLOTTER)
-    Serial.println(F("Detach the servo for 5 seconds. During this time you can move the servo manually."));
-#  endif
-
-    Servo1.detach();
-    /*
-     * After detach the servo is "not powered" for 5 seconds, i.e. no servo signal is generated.
-     * This allows you to easily move the servo manually.
-     */
-    delay(5000); // wait 5 seconds
-    Servo1.attach(SERVO1_PIN, 0);
 }
 
 void blinkLED() {
