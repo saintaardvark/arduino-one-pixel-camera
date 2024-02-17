@@ -69,6 +69,7 @@
 
 #if defined(USE_PCA9685_SERVO_EXPANDER)
 ServoEasing Servo1(PCA9685_DEFAULT_ADDRESS); // If you use more than one PCA9685 you probably must modify MAX_EASING_SERVOS
+ServoEasing Servo2(PCA9685_DEFAULT_ADDRESS); // If you use more than one PCA9685 you probably must modify MAX_EASING_SERVOS
 #else
 ServoEasing Servo1;
 #endif
@@ -94,13 +95,15 @@ void setup() {
     Serial.println("That's done!  Moving on...");
 #undef SERVO1_PIN
 #define SERVO1_PIN  0 // we use first port of expander
+#undef SERVO2_PIN
+#define SERVO2_PIN  1 // we use second port of expander
     Serial.println(F("Attach servo to port 0 of PCA9685 expander"));
     Serial.println(F("Attach servo at pin " STR(SERVO1_PIN)));
     if (Servo1.attach(SERVO1_PIN) == INVALID_SERVO) {
         Serial.println(F("Error attaching servo"));
-        while (true) {
-            blinkLED();
-        }
+        /* while (true) { */
+        /*     blinkLED(); */
+        /* } */
     }
     Serial.println("Okay, attached.  Now to set speed & ease:");
     Servo1.setSpeed(10);
@@ -115,6 +118,36 @@ void setup() {
 
     */
     Servo1.easeTo(START_DEGREE_VALUE);
+    // Wait for servo to reach start position.
+    delay(500);
+
+    Serial.println("On to servo 2!");
+    if (Servo2.InitializeAndCheckI2CConnection(&Serial)) {
+        while (true) {
+            blinkLED();
+        }
+    }
+    Serial.println(F("Attach servo at pin " STR(SERVO2_PIN)));
+    for (int i = 0 ; i < 16 ; i++) {
+      Serial.println(i);
+      if (Servo2.attach(SERVO1_PIN) == INVALID_SERVO) {
+        Serial.println(F("Nope!"));
+        delay(1000);
+      }
+    }
+    Serial.println("Okay, attached.  Now to set speed & ease:");
+    Servo2.setSpeed(10);
+    Serial.println("Speed set...");
+    delay(4000);
+    /* This is where the big swing happens.  It is probably
+       unavoidable if the arm is far away from its start positiion;
+       see:
+
+       https://forum.arduino.cc/t/why-do-servos-move-when-attached/446181
+       https://forum.arduino.cc/t/arduino-servo-on-startup-servo-motor-moves-to-default-position-too-fast/65528/3
+
+    */
+    Servo2.easeTo(START_DEGREE_VALUE);
     // Wait for servo to reach start position.
     delay(500);
 }
