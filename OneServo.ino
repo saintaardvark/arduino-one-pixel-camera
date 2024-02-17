@@ -92,15 +92,10 @@ void setup() {
             blinkLED();
         }
     }
-#if !defined(PRINT_FOR_SERIAL_PLOTTER)
-#  if defined(USE_PCA9685_SERVO_EXPANDER)
 #undef SERVO1_PIN
 #define SERVO1_PIN  0 // we use first port of expander
     Serial.println(F("Attach servo to port 0 of PCA9685 expander"));
-#  else
     Serial.println(F("Attach servo at pin " STR(SERVO1_PIN)));
-#  endif
-#endif
     if (Servo1.attach(SERVO1_PIN) == INVALID_SERVO) {
         Serial.println(F("Error attaching servo"));
         while (true) {
