@@ -87,13 +87,11 @@ void setup() {
      * Attach servo to pin and set servos to start position.
      * This is the position where the movement starts.
      *******************************************************/
-#if defined(USE_PCA9685_SERVO_EXPANDER)
     if (Servo1.InitializeAndCheckI2CConnection(&Serial)) {
         while (true) {
             blinkLED();
         }
     }
-#endif
 #if !defined(PRINT_FOR_SERIAL_PLOTTER)
 #  if defined(USE_PCA9685_SERVO_EXPANDER)
 #undef SERVO1_PIN
