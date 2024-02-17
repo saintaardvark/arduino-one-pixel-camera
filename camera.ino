@@ -71,8 +71,9 @@ void loop() {
 			xmsg += String(xpos);
 			Serial.println(String(ymsg + xmsg));
 			board1.setPWM(XSERVO, 0, angleToPulse(xpos));
-      val = 1023 - analogRead(lightSensor);
 			delay(SERVO_DELAY);
+      val = 1023 - analogRead(lightSensor);
+			Serial.println(val);
     }
 		Serial.println("ypos ++ ");
 		board1.setPWM(YSERVO, 0, angleToPulse(ypos + 1));
