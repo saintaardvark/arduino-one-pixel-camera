@@ -113,11 +113,6 @@ void setup() {
     Servo1.easeTo(START_DEGREE_VALUE);
     // Wait for servo to reach start position.
     delay(500);
-#if defined(PRINT_FOR_SERIAL_PLOTTER)
-    // Legend for Arduino Serial plotter
-    Serial.println(); // end of line of attach values
-    Serial.println("OneServo[us]_Linear->Cubic->Linear");
-#endif
 }
 
 /* Aha!  https://github.com/ArminJo/ServoEasing#list-of-easing-functions */
