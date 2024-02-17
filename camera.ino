@@ -86,7 +86,8 @@ void loop() {
 			board1.setPWM(XSERVO, 0, angleToPulse(xpos));
       delay(SERVO_DELAY);
       val = 1023 - analogRead(lightSensor);
-    }
+      Serial.println(val);
+     }
   }
 	/* resetServosSlowly(); */
 	for (;;) {
