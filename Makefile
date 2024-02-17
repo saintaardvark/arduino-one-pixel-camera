@@ -5,7 +5,9 @@ MONITOR_PORT  = /dev/ttyUSB0
 USER_LIB_PATH := /home/aardvark/Arduino/libraries
 
 # Libraries get listed here
-# ARDUINO_LIBS = Rtc-master
+ARDUINO_LIBS = Adafruit_PWM_Servo_Driver_Library \
+		Adafruit_BusIO \
+		Wire
 
 ARDMK_DIR     = /home/aardvark/dev/src/github.com/sudar/Arduino-Makefile
 
