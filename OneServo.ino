@@ -80,10 +80,10 @@ void blinkLED();
 void setup() {
     pinMode(LED_BUILTIN, OUTPUT);
     Serial.begin(115200);
-    delay(4000); // To be able to connect Serial monitor after reset or power up and before first print out. Do not wait for an attached Serial Monitor!
-    // Just to know which program is running on my Arduino
+        // Just to know which program is running on my Arduino
     Serial.println(F("START " __FILE__ " from " __DATE__ "\r\nUsing library version " VERSION_SERVO_EASING));
-
+    Serial.println("Brief sleep...then I init/attach");
+    delay(4000);
     /********************************************************
      * Attach servo to pin and set servos to start position.
      * This is the position where the movement starts.
@@ -93,6 +93,8 @@ void setup() {
             blinkLED();
         }
     }
+    Serial.println("That's done!  Moving on...");
+    delay(4000);
 #undef SERVO1_PIN
 #define SERVO1_PIN  0 // we use first port of expander
     Serial.println(F("Attach servo to port 0 of PCA9685 expander"));
@@ -103,7 +105,11 @@ void setup() {
             blinkLED();
         }
     }
-    Servo1.setSpeed(10);
+    Serial.println("Okay, attached.  Now to set speed & ease:");
+    delay(4000);
+    Servo1.setSpeed(5);
+    Serial.println("Speed set...");
+    delay(4000);
     Servo1.easeTo(START_DEGREE_VALUE);
     // Wait for servo to reach start position.
     delay(500);
