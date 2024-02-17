@@ -60,30 +60,29 @@ void setup() {
 }
 
 void loop() {
-  for (ypos = 0; ypos <= 180; ypos += 1) {
-		ymsg = "YYYYY ";
-		ymsg += String(ypos);
-		Serial.println(ymsg);
-		board1.setPWM(YSERVO, 0, angleToPulse(ypos));
+  for (xpos = 0; xpos <= 180; xpos += 1) {
+		xmsg = "XXXXX ";
+		xmsg += String(xpos);
+		board1.setPWM(XSERVO, 0, angleToPulse(xpos));
 		delay(SERVO_DELAY);
-    for (xpos = 0; xpos <= 180; xpos += 1) {
-			xmsg = " XXXXX ";
-			xmsg += String(xpos);
-			Serial.println(String(ymsg + xmsg));
-			board1.setPWM(XSERVO, 0, angleToPulse(xpos));
+    for (ypos = 0; ypos <= 180; ypos += 1) {
+			ymsg = " YYYYY ";
+			ymsg += String(ypos);
+			Serial.println(String(xmsg + ymsg));
+			board1.setPWM(YSERVO, 0, angleToPulse(ypos));
 			delay(SERVO_DELAY);
       val = 1023 - analogRead(lightSensor);
 			Serial.println(val);
     }
-		Serial.println("ypos ++ ");
-		board1.setPWM(YSERVO, 0, angleToPulse(ypos + 1));
-		ymsg = "YYYYY ";
-		ymsg += String(ypos + 1);
-    for (xpos = 180; xpos >= 0; xpos -= xgap) {
-			xmsg = " XXXXX ";
-			xmsg += String(xpos);
-			Serial.println(String(ymsg + xmsg));
-			board1.setPWM(XSERVO, 0, angleToPulse(xpos));
+		Serial.println("xpos ++ ");
+		board1.setPWM(XSERVO, 0, angleToPulse(xpos + 1));
+		xmsg = "XXXXX ";
+		xmsg += String(xpos + 1);
+    for (ypos = 180; ypos >= 0; ypos -= xgap) {
+	 	 ymsg = " YYYYY ";
+			ymsg += String(ypos);
+			Serial.println(String(xmsg + ymsg));
+			board1.setPWM(YSERVO, 0, angleToPulse(ypos));
       delay(SERVO_DELAY);
       val = 1023 - analogRead(lightSensor);
       Serial.println(val);
