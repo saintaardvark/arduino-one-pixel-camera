@@ -17,6 +17,7 @@ import numpy as np
 
 
 DATA = []
+OTHERDATA = np.zeros((90, 90))
 
 X_LENGTH = 1801
 
@@ -69,6 +70,16 @@ def graph(data: list, x_length: int = X_LENGTH):
     # plt.gca().set_aspect("equal")  # show square as square
     plt.show()
 
+def othergraph(data: np.array = OTHERDATA):
+    """
+    Graph data in some way
+    """
+    print(f"Here's a graph!")
+    # gdata = munge(data, x=X_LENGTH, reverse=True)
+    plt.pcolormesh(data, cmap="gray")
+    # plt.gca().set_aspect("equal")  # show square as square
+    plt.show()
+
 
 # TODO: annotation for the ser variable
 def log_serial(ser):
@@ -105,6 +116,41 @@ def log_serial(ser):
     return x_length
 
 
+def log_xy_serial(ser):
+    x_length = 9999 # FIXME
+    while True:
+        ser_bytes = ser.readline()
+        try:
+            # Assumption: format
+            # XXXXX [int] YYYYY [int] VAL [int]
+            line = ser_bytes.decode("utf-8").rstrip("\r\n")
+            print(line)
+            vals = line.split()
+            print(vals)
+            # Assumption: x goes from 0 to 890
+            # Assumption: y goes from 90 to 180
+            x = int(vals[1]) - 1  # zero offset
+            y = int(vals[3]) - 90 - 1 # zero offset
+            v = int(vals[5])
+            OTHERDATA[x, y] = v
+            # print(t)
+            DATA.append(line)
+        except ValueError:
+            # not a float? just print it, plus how many samples we have now
+            try:
+                print(ser_bytes.decode("utf-8").rstrip("\r\n"))
+                new_samples = len(DATA) - last
+                print(new_samples)
+                last = len(DATA)
+                if x_length < last:
+                    x_length = last
+            except Exception as e:
+                print(f"Couldn't decode that: {e}")
+                pass
+    return x_length
+    
+
+
 def main():
     """
     Main entry point
@@ -112,10 +158,11 @@ def main():
     ser = serial.Serial("/dev/ttyUSB0", baudrate=9600)
     x_length = 0
     try:
-        x_length = log_serial(ser)
+        # x_length = log_serial(ser)
+        xy_data = log_xy_serial(ser)
     except KeyboardInterrupt:
-        save(DATA)
-        graph(DATA, x_length=x_length)
+        save(OTHERDATA)
+        graph(OTHERDATA, x_length=x_length)
         sys.exit()
 
 
