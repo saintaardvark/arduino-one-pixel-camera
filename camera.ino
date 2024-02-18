@@ -11,6 +11,12 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);  // called this 
 #define SERVOMIN 105  // this is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX 625  // this is the 'maximum' pulse length count (out of 4096)
 
+#define START_X_ANGLE 0
+#define END_X_ANGLE 90
+
+#define START_Y_ANGLE 90
+#define END_Y_ANGLE 180
+
 #define XSERVO 0
 #define YSERVO 1
 
@@ -60,12 +66,12 @@ void setup() {
 }
 
 void loop() {
-  for (xpos = 0; xpos <= 180; xpos += 1) {
+  for (xpos = START_X_ANGLE ; xpos <= END_X_ANGLE; xpos += 1) {
 		xmsg = "XXXXX ";
 		xmsg += String(xpos);
 		board1.setPWM(XSERVO, 0, angleToPulse(xpos));
 		delay(SERVO_DELAY);
-    for (ypos = 0; ypos <= 180; ypos += 1) {
+    for (ypos = START_Y_ANGLE; ypos <= END_Y_ANGLE; ypos += 1) {
 			ymsg = " YYYYY ";
 			ymsg += String(ypos);
 			Serial.println(String(xmsg + ymsg));
@@ -74,11 +80,10 @@ void loop() {
       val = 1023 - analogRead(lightSensor);
 			Serial.println(val);
     }
-		Serial.println("xpos ++ ");
 		board1.setPWM(XSERVO, 0, angleToPulse(xpos + 1));
 		xmsg = "XXXXX ";
 		xmsg += String(xpos + 1);
-    for (ypos = 180; ypos >= 0; ypos -= xgap) {
+    for (ypos = END_Y_ANGLE; ypos >= START_Y_ANGLE; ypos -= 1) {
 	 	 ymsg = " YYYYY ";
 			ymsg += String(ypos);
 			Serial.println(String(xmsg + ymsg));
