@@ -22,7 +22,7 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);  // called this 
 
 /* microseconds to sleep at each degree.  Since code currently assumes
    10 sec to sweep, that's 10 s / 180 degrees = 56 microseconds.  Doubling
-	 this (sorta) arbitrarily to 100 microseconds.
+   this (sorta) arbitrarily to 100 microseconds.
 */
 #define SERVO_DELAY 100
 
@@ -44,7 +44,7 @@ int val = 0;
 int i = 0;
 int SLEEPYTIME = 1000;
 
-String xmsg, ymsg;
+String xmsg, ymsg, valmsg;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -54,47 +54,49 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
   Serial.println("Hello, world!");
-	Serial.println("setting light sensor...");
+  Serial.println("setting light sensor...");
   pinMode(lightSensor, INPUT);
-	/* TODO: Would be nice to have this again.  But we can't read the
-  	 servo angle from the board. */
+  /* TODO: Would be nice to have this again.  But we can't read the
+     servo angle from the board. */
   /* resetServosSlowly(); */
-	Serial.println("Initial set!");
-	board1.setPWM(XSERVO, 0, angleToPulse(0));
-	board1.setPWM(YSERVO, 0, angleToPulse(0));
+  Serial.println("Initial set!");
+  board1.setPWM(XSERVO, 0, angleToPulse(0));
+  board1.setPWM(YSERVO, 0, angleToPulse(0));
   delay(1000);
 }
 
 void loop() {
   for (xpos = START_X_ANGLE ; xpos <= END_X_ANGLE; xpos += 1) {
-		xmsg = "XXXXX ";
-		xmsg += String(xpos);
-		board1.setPWM(XSERVO, 0, angleToPulse(xpos));
-		delay(SERVO_DELAY);
+    xmsg = "XXXXX ";
+    xmsg += String(xpos);
+    board1.setPWM(XSERVO, 0, angleToPulse(xpos));
+    delay(SERVO_DELAY);
     for (ypos = START_Y_ANGLE; ypos <= END_Y_ANGLE; ypos += 1) {
-			ymsg = " YYYYY ";
-			ymsg += String(ypos);
-			Serial.println(String(xmsg + ymsg));
-			board1.setPWM(YSERVO, 0, angleToPulse(ypos));
-			delay(SERVO_DELAY);
-      val = 1023 - analogRead(lightSensor);
-			Serial.println(val);
-    }
-		board1.setPWM(XSERVO, 0, angleToPulse(xpos + 1));
-		xmsg = "XXXXX ";
-		xmsg += String(xpos + 1);
-    for (ypos = END_Y_ANGLE; ypos >= START_Y_ANGLE; ypos -= 1) {
-	 	 ymsg = " YYYYY ";
-			ymsg += String(ypos);
-			Serial.println(String(xmsg + ymsg));
-			board1.setPWM(YSERVO, 0, angleToPulse(ypos));
+      ymsg = " YYYYY ";
+      ymsg += String(ypos);
+      board1.setPWM(YSERVO, 0, angleToPulse(ypos));
       delay(SERVO_DELAY);
       val = 1023 - analogRead(lightSensor);
-      Serial.println(val);
+      valmsg = " VAL ";
+      valmsg += String(val);
+      Serial.println(String(xmsg + ymsg + valmsg));
+    }
+    board1.setPWM(XSERVO, 0, angleToPulse(xpos + 1));
+    xmsg = "XXXXX ";
+    xmsg += String(xpos + 1);
+    for (ypos = END_Y_ANGLE; ypos >= START_Y_ANGLE; ypos -= 1) {
+     ymsg = " YYYYY ";
+      ymsg += String(ypos);
+      board1.setPWM(YSERVO, 0, angleToPulse(ypos));
+      delay(SERVO_DELAY);
+      val = 1023 - analogRead(lightSensor);
+      valmsg = " VAL ";
+      valmsg += String(val);
+      Serial.println(String(xmsg + ymsg + valmsg));
      }
   }
-	/* resetServosSlowly(); */
-	for (;;) {
-		delay(50000);
-	}
+  /* resetServosSlowly(); */
+  for (;;) {
+    delay(50000);
+  }
 }
