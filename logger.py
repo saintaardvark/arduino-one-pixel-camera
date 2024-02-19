@@ -22,13 +22,12 @@ OTHERDATA = np.zeros((90, 90))
 X_LENGTH = 1801
 
 
-def save(data: list):
+def save(data: list, filename: str):
     """
     Save data in some way
     """
     # FIXME: Not really CSV
     df = pd.DataFrame(data)
-    filename = "data/" + datetime.now().strftime("%Y-%m-%d_%H:%M:%S") + ".csv"
     with open(filename, "w") as f:
         df.to_csv(f)
     print(f"Data file: {filename}")
@@ -118,14 +117,16 @@ def log_serial(ser):
     return x_length
 
 
-def log_xy_serial(ser):
-    x_length = 9999 # FIXME
+def log_xy_serial(ser, filename: str):
+    count = 0
     while True:
         ser_bytes = ser.readline()
         try:
             # Assumption: format
             # XXXXX [int] YYYYY [int] VAL [int]
             line = ser_bytes.decode("utf-8").rstrip("\r\n")
+            if line == "END END END":
+                return
             vals = line.split()
             # Assumption: x goes from 0 to 890
             # Assumption: y goes from 90 to 180
@@ -136,10 +137,13 @@ def log_xy_serial(ser):
             v = int(vals[5])
             OTHERDATA[x, y] = v
             print(f"OTHERDATA[{x}, {y}] = {v}")
+            count += 1
+            # Save point: every other line
+            if x % 2 == 0 and y % 90 == 0:
+                save(OTHERDATA, filename)
         except Exception as e:
             print(f"Couldn't decode that: {e}")
             pass
-    return x_length
     
 
 
@@ -148,12 +152,13 @@ def main():
     Main entry point
     """
     ser = serial.Serial("/dev/ttyUSB0", baudrate=9600)
+    filename = "data/" + datetime.now().strftime("%Y-%m-%d_%H:%M:%S") + ".csv"
     x_length = 0
     try:
         # x_length = log_serial(ser)
-        xy_data = log_xy_serial(ser)
+        log_xy_serial(ser, filename)
     except KeyboardInterrupt:
-        save(OTHERDATA)
+        save(OTHERDATA, filename)
         othergraph(OTHERDATA)
         sys.exit()
 

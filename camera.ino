@@ -95,6 +95,8 @@ void loop() {
       Serial.println(String(xmsg + ymsg + valmsg));
      }
   }
+	/* And now we rest. */
+	Serial.println("END END END");
   /* resetServosSlowly(); */
   for (;;) {
     delay(50000);
