@@ -27,11 +27,12 @@ def save(data: list):
     Save data in some way
     """
     # FIXME: Not really CSV
+    df = pd.DataFrame(data)
     filename = "data/" + datetime.now().strftime("%Y-%m-%d_%H:%M:%S") + ".csv"
     with open(filename, "w") as f:
-        f.writelines([f"{i}\n" for i in data])
+        df.to_csv(f)
     print(f"Data file: {filename}")
-
+    
 
 def munge(data: list, x: int = 100, reverse: bool = True):
     """
@@ -70,9 +71,10 @@ def graph(data: list, x_length: int = X_LENGTH):
     # plt.gca().set_aspect("equal")  # show square as square
     plt.show()
 
+
 def othergraph(data: np.array = OTHERDATA):
     """
-    Graph data in some way
+    Graph data in some other way
     """
     print(f"Here's a graph!")
     # gdata = munge(data, x=X_LENGTH, reverse=True)
@@ -124,29 +126,19 @@ def log_xy_serial(ser):
             # Assumption: format
             # XXXXX [int] YYYYY [int] VAL [int]
             line = ser_bytes.decode("utf-8").rstrip("\r\n")
-            print(line)
             vals = line.split()
-            print(vals)
             # Assumption: x goes from 0 to 890
             # Assumption: y goes from 90 to 180
-            x = int(vals[1]) - 1  # zero offset
+            x = int(vals[1])
+            # FIXME: off-by-one error in the arduino code, I
+            # think...ypos <= END_Y_ANGLE, should prolly be <
             y = int(vals[3]) - 90 - 1 # zero offset
             v = int(vals[5])
             OTHERDATA[x, y] = v
-            # print(t)
-            DATA.append(line)
-        except ValueError:
-            # not a float? just print it, plus how many samples we have now
-            try:
-                print(ser_bytes.decode("utf-8").rstrip("\r\n"))
-                new_samples = len(DATA) - last
-                print(new_samples)
-                last = len(DATA)
-                if x_length < last:
-                    x_length = last
-            except Exception as e:
-                print(f"Couldn't decode that: {e}")
-                pass
+            print(f"OTHERDATA[{x}, {y}] = {v}")
+        except Exception as e:
+            print(f"Couldn't decode that: {e}")
+            pass
     return x_length
     
 
@@ -162,7 +154,7 @@ def main():
         xy_data = log_xy_serial(ser)
     except KeyboardInterrupt:
         save(OTHERDATA)
-        graph(OTHERDATA, x_length=x_length)
+        othergraph(OTHERDATA)
         sys.exit()
 
 
