@@ -11,11 +11,11 @@ Adafruit_PWMServoDriver board1 = Adafruit_PWMServoDriver(0x40);  // called this 
 #define SERVOMIN 105  // this is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAX 625  // this is the 'maximum' pulse length count (out of 4096)
 
-#define START_X_ANGLE 0
+#define START_X_ANGLE 45
 #define END_X_ANGLE 90
 
 #define START_Y_ANGLE 90
-#define END_Y_ANGLE 180
+#define END_Y_ANGLE 135
 
 #define XSERVO 0
 #define YSERVO 1
