@@ -46,6 +46,17 @@ int SLEEPYTIME = 1000;
 
 String xmsg, ymsg, valmsg;
 
+void resetServosSlowly(int xpos, int ypos) {
+  // Assumption: current xpos > START_X_ANGLE
+	for (int x = xpos; x > START_X_ANGLE; x--) {
+		board1.setPWM(XSERVO, 0, angleToPulse(x));
+	}
+	// Same assumption
+	for (int y = ypos; y > START_Y_ANGLE; y--) {
+		board1.setPWM(YSERVO, 0, angleToPulse(y));
+	}
+}
+
 // the setup function runs once when you press reset or power the board
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
@@ -97,7 +108,7 @@ void loop() {
   }
 	/* And now we rest. */
 	Serial.println("END END END");
-  /* resetServosSlowly(); */
+  resetServosSlowly(xpos, ypos);
   for (;;) {
     delay(50000);
   }
