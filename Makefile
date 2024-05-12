@@ -9,8 +9,9 @@ log:
 jl:
 	$(VENV)/jupyter-lab
 
-install:
-	$(RSHELL) rsync micropython/ /pyboard/
+# --mirror: delete files on board that are not in source dir
+install: kill_console
+	$(RSHELL) rsync --mirror micropython/ /pyboard/
 
 .PHONY: repl
 repl:
