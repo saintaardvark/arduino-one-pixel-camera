@@ -16,6 +16,7 @@ sensor = ADC(Pin(4, Pin.IN))
 def stop_y(s):
     s.position(Y_SERVO, degrees=90)
 
+
 def get_s():
     i2c = SoftI2C(scl=SCL, sda=SDA)
     s = Servos(i2c)
@@ -43,19 +44,27 @@ def main():
     # Stop y servo
     print("Stopping y servo...")
     stop_y(s)
-    for i in range(0, MAX_Y_SWINGS):
+    y = 0
+    while y < MAX_Y_SWINGS:
         # Sweep up x 0 to 90, taking measurements
-        print(f"Y iteration {i} of {MAX_Y_SWINGS}")
-        for i in range(0, 90):
-            s.position(X_SERVO, i)
-            print(read_sensor())
+        print(f"Y iteration {y} of {MAX_Y_SWINGS}")
+        for x in range(0, 90):
+            s.position(X_SERVO, x)
+            msm = read_sensor()
+            msg = f"XXXXX {x} YYYYY {y} VAL {msm}"
+            print(msg)
             sleep(SLEEPYTIME)
         swing_y(s)
-        for i in range(90, 0, -1):
-            s.position(X_SERVO, i)
-            print(read_sensor())
+        y += 1
+        for x in range(90, 0, -1):
+            s.position(X_SERVO, x)
+            msm = read_sensor()
+            msg = f"XXXXX {x} YYYYY {y} VAL {msm}"
+            print(msg)
             sleep(SLEEPYTIME)
         swing_y(s)
+        y += 1
+
     while True:
         sleep(60)
 
