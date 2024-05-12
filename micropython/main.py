@@ -2,27 +2,19 @@ from machine import Pin, ADC, SoftI2C
 from time import sleep
 from servo import Servos
 
-SERVO_IDX = 1
+Y_SERVO = 1
+X_SERVO = 0
 SDA = Pin(22)
 SCL = Pin(23)
-POT = Pin(15)
+SLEEPYTIME = 0.2
 
-blue = Pin(17, Pin.OUT, value=0)
-yellow = Pin(5, Pin.OUT, value=0)
+MAX_Y_SWINGS = 4  # *Actual* number will be 2x this!
 
-
-def stop(s):
-    s.position(SERVO_IDX, degrees=90)
+sensor = ADC(Pin(4, Pin.IN))
 
 
-def get_p():
-    pot = ADC(POT)
-    return pot
-
-
-def read_degrees(p):
-    return int((p.read() / 4095) * 180)
-
+def stop_y(s):
+    s.position(Y_SERVO, degrees=90)
 
 def get_s():
     i2c = SoftI2C(scl=SCL, sda=SDA)
@@ -30,63 +22,43 @@ def get_s():
     return s
 
 
-def sweep(s):
-    while True:
-        for i in range(0, 180, 10):
-            print(i)
-            s.position(SERVO_IDX, i)
-            sleep(1)
-        for i in range(180, 0, -10):
-            print(i)
-            s.position(SERVO_IDX, i)
-            sleep(1)
+def read_sensor():
+    """
+    Read sensor value in range 0-65535
+    """
+    return sensor.read_u16()
 
 
-def slow_rotation(s, p, loops=0):
+def swing_y(s):
     """
-    Slow rotation.  If loops == 0, loop forever; otherwise,
-    do that many loops.
+    Swing just a little in the y direction
     """
-    blue.on()
-    yellow.off()
-    i = 0
-    while True:
-        val = read_degrees(p)
-        print(f"Slow: {val}...")
-        s.position(SERVO_IDX, degrees=val)
-        sleep(0.2)
-        print("Stop...")
-        stop(s)
-        print("Wait...")
-        sleep(3)
-        i += 1
-        if loops > 0 and i == loops:
-            return
-
-
-def set_speed(s, p, sleepytime=0.2, loops=0):
-    """
-    Set speed
-    """
-    blue.off()
-    yellow.on()
-    i = 0
-    while True:
-        val = read_degrees(p)
-        print(val)
-        s.position(SERVO_IDX, degrees=val)
-        sleep(0.2)
-        i += 1
-        print(loops, i)
-        if loops > 0 and i == loops:
-            return
+    s.position(Y_SERVO, degrees=0)
+    sleep(0.2)
+    stop_y(s)
 
 
 def main():
-    blue.off()
-    yellow.off()
     s = get_s()
-    p = get_p()
+    # Stop y servo
+    print("Stopping y servo...")
+    stop_y(s)
+    for i in range(0, MAX_Y_SWINGS):
+        # Sweep up x 0 to 90, taking measurements
+        print(f"Y iteration {i} of {MAX_Y_SWINGS}")
+        for i in range(0, 90):
+            s.position(X_SERVO, i)
+            print(read_sensor())
+            sleep(SLEEPYTIME)
+        swing_y(s)
+        for i in range(90, 0, -1):
+            s.position(X_SERVO, i)
+            print(read_sensor())
+            sleep(SLEEPYTIME)
+        swing_y(s)
     while True:
-        set_speed(s, p, loops=100)  # shorter loops
-        slow_rotation(s, p, loops=20)
+        sleep(60)
+
+
+if __name__ == "__main__":
+    main()
