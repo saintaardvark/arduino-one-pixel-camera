@@ -15,7 +15,7 @@ def main():
     print("Here we go!")
     filename = "data/2024-05-12_14:59:15.csv"
     df = pd.read_csv(filename)
-    lib.othergraph(df)
+    lib.graph(df)
 
 
 if __name__ == "__main__":

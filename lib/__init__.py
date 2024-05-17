@@ -8,24 +8,18 @@ import numpy as np
 # TODO: Look at
 # https://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
 # for live plotting options.
-def graph(data: list, x_length: int):
+def graph(data: np.array, cmap: str = "gray", norm: str = "linear"):
     """
-    Graph data in some way
+    Graph data in some way.  Args:
+
+    data: numpy array
+    cmap: color map for pcolormesh
+
+    norm: string of name of normalize for pcolormesh;
+    Normalize classes not supported.
     """
     print(f"Here's a graph!")
-    gdata = munge(data, x=x_length, reverse=True)
-    plt.pcolormesh(gdata, cmap="gray")
-    # plt.gca().set_aspect("equal")  # show square as square
-    plt.show()
-
-
-def othergraph(data: np.array):
-    """
-    Graph data in some other way
-    """
-    print(f"Here's a graph!")
-    # gdata = munge(data, x=X_LENGTH, reverse=True)
-    plt.pcolormesh(data, cmap="gray")
+    plt.pcolormesh(data, cmap=cmap, norm=norm)
     # plt.gca().set_aspect("equal")  # show square as square
     plt.show()
 

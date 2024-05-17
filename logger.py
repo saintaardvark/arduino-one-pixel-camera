@@ -111,7 +111,7 @@ def main():
         save(OTHERDATA, filename)
     except KeyboardInterrupt:
         save(OTHERDATA, filename)
-        lib.othergraph(OTHERDATA)
+        lib.graph(OTHERDATA)
         sys.exit()
 
 
