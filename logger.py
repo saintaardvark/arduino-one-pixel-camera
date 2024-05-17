@@ -19,6 +19,8 @@ import numpy as np
 DATA = []
 OTHERDATA = np.zeros((90, 90))
 
+BAUDRATE = 115200
+
 X_LENGTH = 1801
 
 
