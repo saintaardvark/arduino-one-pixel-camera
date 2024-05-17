@@ -130,18 +130,14 @@ def log_xy_serial(ser, filename: str):
             if line == "END END END":
                 return
             vals = line.split()
-            # Assumption: x goes from 0 to 890
-            # Assumption: y goes from 90 to 180
             x = int(vals[1])
-            # FIXME: off-by-one error in the arduino code, I
-            # think...ypos <= END_Y_ANGLE, should prolly be <
-            y = int(vals[3]) - 90 - 1 # zero offset
+            y = int(vals[3])
             v = int(vals[5])
             OTHERDATA[x, y] = v
             print(f"OTHERDATA[{x}, {y}] = {v}")
             count += 1
             # Save point: every other line
-            if x % 2 == 0 and y % 90 == 0:
+            if x % 2 == 0 and y == 0:
                 save(OTHERDATA, filename)
         except Exception as e:
             print(f"Couldn't decode that: {e}")
