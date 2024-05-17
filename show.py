@@ -8,14 +8,8 @@ from datetime import datetime
 import serial
 import sys
 
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-from matplotlib.colors import ListedColormap
-import numpy as np
 
 import lib
-
 
 DATA = []
 OTHERDATA = np.zeros((90, 90))
@@ -34,6 +28,10 @@ def save(data: list, filename: str):
     with open(filename, "w") as f:
         df.to_csv(f)
     print(f"Data file: {filename}")
+    
+
+def munge(data: list, x: int = 100, reverse: bool = True):
+    """
 
 
 # TODO: annotation for the ser variable
@@ -74,6 +72,7 @@ def log_serial(ser):
 def log_xy_serial(ser, filename: str):
     count = 0
     while True:
+        print("[FIXME] Made it here")
         ser_bytes = ser.readline()
         try:
             # Assumption: format
@@ -82,18 +81,24 @@ def log_xy_serial(ser, filename: str):
             if line == "END END END":
                 return
             vals = line.split()
+            # Assumption: x goes from 0 to 890
+            # Assumption: y goes from 90 to 180
             x = int(vals[1])
+            # FIXME: off-by-one error in the arduino code, I
+            # think...ypos <= END_Y_ANGLE, should prolly be <
+            # y = int(vals[3]) - 90 - 1 # zero offset
             y = int(vals[3])
             v = int(vals[5])
             OTHERDATA[x, y] = v
             print(f"OTHERDATA[{x}, {y}] = {v}")
             count += 1
             # Save point: every other line
-            if x % 2 == 0 and y == 0:
+            if x % 2 == 0 and y % 90 == 0:
                 save(OTHERDATA, filename)
         except Exception as e:
             print(f"Couldn't decode that: {e}")
             pass
+    
 
 
 def main():
@@ -101,18 +106,11 @@ def main():
     Main entry point
     """
     print("Here we go!")
-    ser = serial.Serial("/dev/ttyUSB0", baudrate=BAUDRATE)
-    filename = "data/" + datetime.now().strftime("%Y-%m-%d_%H:%M:%S") + ".csv"
-    x_length = 0
-    try:
-        # The firmware waits for input before continuing
-        ser.write(bytes("\n", "utf-8"))
-        log_xy_serial(ser, filename)
-        save(OTHERDATA, filename)
-    except KeyboardInterrupt:
-        save(OTHERDATA, filename)
-        lib.othergraph(OTHERDATA)
-        sys.exit()
+    # ser = serial.Serial("/dev/ttyUSB0", baudrate=BAUDRATE)
+    # filename = "data/" + datetime.now().strftime("%Y-%m-%d_%H:%M:%S") + ".csv"
+    filename = "data/2024-05-12_14:59:15.csv"
+    df = pd.read_csv(filename)
+    lib.othergraph(df)
 
 
 if __name__ == "__main__":
