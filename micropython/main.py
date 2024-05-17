@@ -1,4 +1,5 @@
 from machine import Pin, ADC, SoftI2C
+import sys
 from time import sleep
 from servo import Servos
 
@@ -44,6 +45,8 @@ def main():
     # Stop y servo
     print("Stopping y servo...")
     stop_y(s)
+    print("Press <enter> to continue...")
+    sys.stdin.readline()
     y = 0
     while y < MAX_Y_SWINGS:
         # Sweep up x 0 to 90, taking measurements

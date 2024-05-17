@@ -151,11 +151,13 @@ def main():
     """
     Main entry point
     """
-    ser = serial.Serial("/dev/ttyUSB0", baudrate=9600)
+    print("Here we go!")
+    ser = serial.Serial("/dev/ttyUSB0", baudrate=BAUDRATE)
     filename = "data/" + datetime.now().strftime("%Y-%m-%d_%H:%M:%S") + ".csv"
     x_length = 0
     try:
-        # x_length = log_serial(ser)
+        # The firmware waits for input before continuing
+        ser.write(bytes('\n', "utf-8"))
         log_xy_serial(ser, filename)
     except KeyboardInterrupt:
         save(OTHERDATA, filename)
