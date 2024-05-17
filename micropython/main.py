@@ -8,14 +8,14 @@ X_SERVO = 0
 SDA = Pin(22)
 SCL = Pin(23)
 SLEEPYTIME = 0.2
-
-MAX_Y_SWINGS = 4  # *Actual* number will be 2x this!
+MAX_X = 45
+MAX_Y = 45
 
 sensor = ADC(Pin(4, Pin.IN))
 
 
-def stop_y(s):
-    s.position(Y_SERVO, degrees=90)
+def stop_x(s):
+    s.position(X_SERVO, degrees=90)
 
 
 def get_s():
@@ -31,43 +31,44 @@ def read_sensor():
     return sensor.read_u16()
 
 
-def swing_y(s):
+def swing_x(s):
     """
-    Swing just a little in the y direction
+    Swing just a little in the x direction
     """
-    s.position(Y_SERVO, degrees=0)
+    s.position(X_SERVO, degrees=0)
     sleep(0.2)
-    stop_y(s)
+    stop_x(s)
 
 
 def main():
     s = get_s()
     # Stop y servo
-    print("Stopping y servo...")
-    stop_y(s)
+    print("Stopping x servo...")
+    stop_x(s)
     print("Press <enter> to continue...")
     sys.stdin.readline()
-    y = 0
-    while y < MAX_Y_SWINGS:
+    x = 0
+    while x < MAX_X:
         # Sweep up x 0 to 90, taking measurements
-        print(f"Y iteration {y} of {MAX_Y_SWINGS}")
-        for x in range(0, 90):
-            s.position(X_SERVO, x)
+        # print(f"Y iteration {y} of {MAX_Y_SWINGS}")
+        for y in range(0, MAX_Y):
+            s.position(Y_SERVO, y)
             msm = read_sensor()
             msg = f"XXXXX {x} YYYYY {y} VAL {msm}"
             print(msg)
             sleep(SLEEPYTIME)
-        swing_y(s)
-        y += 1
-        for x in range(90, 0, -1):
-            s.position(X_SERVO, x)
+        swing_x(s)
+        x += 1
+        for y in range(MAX_Y, 0, -1):
+            s.position(Y_SERVO, y)
             msm = read_sensor()
             msg = f"XXXXX {x} YYYYY {y} VAL {msm}"
             print(msg)
             sleep(SLEEPYTIME)
-        swing_y(s)
-        y += 1
+        swing_x(s)
+        x += 1
 
+    print("END END END")
     while True:
         sleep(60)
 
