@@ -40,37 +40,49 @@ def swing_x(s):
     stop_x(s)
 
 
+def move_and_read(s, x, dir: str = "up"):
+    """
+    Move in dir and read measurements.
+
+    dir: either 'up' or 'down'
+    """
+    if dir == "up":
+        start = 0
+        end = MAX_Y + 1
+        step = 1
+    elif dir == "down":
+        start = MAX_Y
+        end = -1
+        step = -1
+    else:
+        raise ValueError(f"Unknown direction {dir}, should be either 'up' or 'down'")
+    for y in range(start, end, step):
+        s.position(Y_SERVO, y)
+        msm = read_sensor()
+        msg = f"XXXXX {x} YYYYY {y} VAL {msm}"
+        print(msg)
+        sleep(SLEEPYTIME)
+
+
 def main():
     s = get_s()
-    # Stop y servo
-    print("Stopping x servo...")
-    stop_x(s)
-    print("Press <enter> to continue...")
-    sys.stdin.readline()
-    x = 0
-    while x < MAX_X:
-        # Sweep up x 0 to 90, taking measurements
-        # print(f"Y iteration {y} of {MAX_Y_SWINGS}")
-        for y in range(0, MAX_Y):
-            s.position(Y_SERVO, y)
-            msm = read_sensor()
-            msg = f"XXXXX {x} YYYYY {y} VAL {msm}"
-            print(msg)
-            sleep(SLEEPYTIME)
-        swing_x(s)
-        x += 1
-        for y in range(MAX_Y, 0, -1):
-            s.position(Y_SERVO, y)
-            msm = read_sensor()
-            msg = f"XXXXX {x} YYYYY {y} VAL {msm}"
-            print(msg)
-            sleep(SLEEPYTIME)
-        swing_x(s)
-        x += 1
-
-    print("END END END")
     while True:
-        sleep(60)
+        # Stop x servo
+        print("Stopping x servo...")
+        stop_x(s)
+        print("Press <enter> to continue...")
+        sys.stdin.readline()
+        x = 0
+        while x < MAX_X:
+            # Sweep up x 0 to 90, taking measurements
+            # print(f"Y iteration {y} of {MAX_Y_SWINGS}")
+            move_and_read(s, x, dir="up")
+            swing_x(s)
+            x += 1
+            move_and_read(s, x, dir="down")
+            swing_x(s)
+            x += 1
+        print("END END END")
 
 
 if __name__ == "__main__":
