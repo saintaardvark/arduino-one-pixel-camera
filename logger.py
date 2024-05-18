@@ -33,7 +33,6 @@ def save(data: list, filename: str):
     df = pd.DataFrame(data)
     with open(filename, "w") as f:
         df.to_csv(f)
-    print(f"Data file: {filename}")
 
 
 # TODO: annotation for the ser variable
@@ -111,8 +110,8 @@ def main():
         save(OTHERDATA, filename)
     except KeyboardInterrupt:
         save(OTHERDATA, filename)
-        lib.graph(OTHERDATA)
-        sys.exit()
+    print(f"Data file: {filename}")
+    lib.graph(OTHERDATA)
 
 
 if __name__ == "__main__":
