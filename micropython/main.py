@@ -24,11 +24,18 @@ def get_s():
     return s
 
 
-def read_sensor():
+def read_sensor(samples=10):
     """
-    Read sensor value in range 0-65535
+    Read sensor value in range 0-65535.
+
+    Reads 10 times in quick succession and returns the mean.
     """
-    return sensor.read_u16()
+    total = 0
+    for i in range(samples):
+        total += sensor.read_u16()
+        sleep(0.05)
+
+    return int(total / samples)
 
 
 def swing_x(s):
