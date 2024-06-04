@@ -7,3 +7,9 @@ https://hackaday.com/2015/01/31/a-single-pixel-digital-camera-with-arduino/
 # Circuit
 
 A0 -> light resistor -> ground
+
+# What I might want to try
+
+- https://www.youtube.com/watch?v=hkxnQIKybiI
+- https://learn.adafruit.com/all-about-stepper-motors?view=all
+- https://docs.mosiwi.com/en/latest/outsourcing/28byj-48/28byj-48.html
