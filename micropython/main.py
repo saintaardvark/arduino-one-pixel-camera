@@ -19,13 +19,27 @@ def stop_x(s):
     s.position(X_SERVO, degrees=90)
 
 
-def get_s():
+def get_s(
+    freq: int = 50, min_us: int = 600, max_us: int = 2400, degrees: int = 180
+) -> Servos:
+    """
+    Build & return a pca8695 servo controller object.
+
+    Args:
+      freq (int): frequency in Hertz that servo runs at
+      min_us (int): minimum duty cycle in microseconds
+      max_us (int): maximum duty cycle in microseconds
+      degrees (int): degrees that the servo swings
+
+    Returns:
+      Servos: servo controller object
+    """
     i2c = SoftI2C(scl=SCL, sda=SDA)
-    s = Servos(i2c)
+    s = Servos(i2c, freq=50, min_us=min_us, max_us=max_us, degrees=degrees)
     return s
 
 
-def read_sensor(samples=10):
+def read_sensor(samples: int = 10):
     """
     Read sensor value in range 0-65535.
 
@@ -34,25 +48,28 @@ def read_sensor(samples=10):
     total = 0
     for i in range(samples):
         total += sensor.read_u16()
-        sleep(0.05)
+        sleep(SLEEPYTIME / samples)
 
     return int(total / samples)
 
 
-def swing_x(s):
+def swing_x(s: Servos, degrees: int = 0, sleepytime: float = 0.2):
     """
     Swing just a little in the x direction
     """
-    s.position(X_SERVO, degrees=0)
-    sleep(0.2)
+    s.position(X_SERVO, degrees)
+    sleep(sleepytime)
     stop_x(s)
 
 
-def move_and_read(s, x, dir: str = "up"):
+def move_y_and_read(s, x, dir: str = "up"):
     """
     Move in dir and read measurements.
 
-    dir: either 'up' or 'down'
+    Args:
+      s: servo object
+      x: x position; used for logging
+      dir: either 'up' or 'down'
     """
     if dir == "up":
         start = 0
@@ -66,10 +83,9 @@ def move_and_read(s, x, dir: str = "up"):
         raise ValueError(f"Unknown direction {dir}, should be either 'up' or 'down'")
     for y in range(start, end, step):
         s.position(Y_SERVO, y)
-        msm = read_sensor()
+        msm = read_sensor(samples=100)
         msg = f"XXXXX {x} YYYYY {y} VAL {msm}"
         print(msg)
-        sleep(SLEEPYTIME)
 
 
 def main():
@@ -82,13 +98,13 @@ def main():
         sys.stdin.readline()
         x = 0
         while x < MAX_X:
+            s.position(X_SERVO, x)
             # Sweep up x 0 to 90, taking measurements
             # print(f"Y iteration {y} of {MAX_Y_SWINGS}")
-            move_and_read(s, x, dir="up")
-            swing_x(s)
+            move_y_and_read(s, x, dir="up")
             x += 1
-            move_and_read(s, x, dir="down")
-            swing_x(s)
+            s.position(X_SERVO, x)
+            move_y_and_read(s, x, dir="down")
             x += 1
         print("END END END")
 
