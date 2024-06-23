@@ -96,16 +96,18 @@ def main():
         stop_x(s)
         print("Press <enter> to continue...")
         sys.stdin.readline()
-        x = 0
-        while x < MAX_X:
+        # Not sure why, but this is what I need to get the X servo to
+        # swing from left to right.
+        x = MAX_X
+        while x >= 0:
             s.position(X_SERVO, x)
             # Sweep up x 0 to 90, taking measurements
             # print(f"Y iteration {y} of {MAX_Y_SWINGS}")
             move_y_and_read(s, x, dir="up")
-            x += 1
+            x -= 1
             s.position(X_SERVO, x)
             move_y_and_read(s, x, dir="down")
-            x += 1
+            x -= 1
         print("END END END")
 
 
