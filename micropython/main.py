@@ -2,9 +2,10 @@ from machine import Pin, ADC, SoftI2C
 import sys
 from time import sleep
 from servo import Servos
+from test import test_y
 
-Y_SERVO = 1
-X_SERVO = 0
+from constants import X_SERVO, Y_SERVO
+
 SDA = Pin(22)
 SCL = Pin(23)
 SLEEPYTIME = 0.2

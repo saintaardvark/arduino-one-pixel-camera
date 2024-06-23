@@ -1,0 +1,2 @@
+Y_SERVO = 1
+X_SERVO = 0
