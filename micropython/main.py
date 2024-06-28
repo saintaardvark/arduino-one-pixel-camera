@@ -96,18 +96,24 @@ def main():
         stop_x(s)
         print("Press <enter> to continue...")
         sys.stdin.readline()
+        print(f"MAX_X {MAX_X} MAX_Y {MAX_Y}")
         # Not sure why, but this is what I need to get the X servo to
         # swing from left to right.
         x = MAX_X
+        # count is the X value of the final dataset. It goes up as we
+        # swing left to right.
+        count = 0
         while x >= 0:
             s.position(X_SERVO, x)
             # Sweep up x 0 to 90, taking measurements
             # print(f"Y iteration {y} of {MAX_Y_SWINGS}")
-            move_y_and_read(s, x, dir="up")
+            move_y_and_read(s, count, dir="up")
             x -= 1
+            count += 1
             s.position(X_SERVO, x)
-            move_y_and_read(s, x, dir="down")
+            move_y_and_read(s, count, dir="down")
             x -= 1
+            count += 1
         print("END END END")
 
 
