@@ -107,6 +107,7 @@ def log_xy_serial(ser: serial.Serial, filename: str) -> np.array:
             y = int(vals[3])
             v = int(vals[5])
             data[x, y] = v
+            print(f"data[{x}, {y}] = {v}")
             count += 1
             # Save point: every other line
             if x % 2 == 0 and y == 0:
