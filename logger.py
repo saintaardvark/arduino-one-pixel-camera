@@ -18,7 +18,7 @@ import lib
 
 
 DATA = []
-OTHERDATA = np.zeros((90, 90))
+OTHERDATA = np.zeros((45, 45))
 
 BAUDRATE = 115200
 
@@ -83,6 +83,17 @@ def log_xy_serial(ser: serial.Serial, filename: str) -> np.array:
       np.array: the data read from the camera
     """
     count = 0
+    # The first line should be the size of the array
+    ser_bytes = ser.readline()
+    # Assumption: format
+    # MAX_X [int] MAX_Y [int]
+    line = ser_bytes.decode("utf-8").rstrip("\r\n")
+    vals = line.split()
+    print(vals)
+    x = int(vals[1])
+    y = int(vals[3])
+    print(f"{x=} {y=}")
+    data = np.zeros((x, y))
     while True:
         ser_bytes = ser.readline()
         try:
@@ -90,17 +101,16 @@ def log_xy_serial(ser: serial.Serial, filename: str) -> np.array:
             # XXXXX [int] YYYYY [int] VAL [int]
             line = ser_bytes.decode("utf-8").rstrip("\r\n")
             if line == "END END END":
-                return
+                return data
             vals = line.split()
             x = int(vals[1])
             y = int(vals[3])
             v = int(vals[5])
-            OTHERDATA[x, y] = v
-            print(f"OTHERDATA[{x}, {y}] = {v}")
+            data[x, y] = v
             count += 1
             # Save point: every other line
             if x % 2 == 0 and y == 0:
-                save(OTHERDATA, filename)
+                save(data, filename)
         except Exception as e:
             print(f"Couldn't decode that: {e}")
             pass
@@ -117,12 +127,12 @@ def main():
     try:
         # The firmware waits for input before continuing
         ser.write(bytes("\n", "utf-8"))
-        log_xy_serial(ser, filename)
-        save(OTHERDATA, filename)
+        data = log_xy_serial(ser, filename)
+        save(data, filename)
     except KeyboardInterrupt:
-        save(OTHERDATA, filename)
+        save(data, filename)
     print(f"Data file: {filename}")
-    lib.graph(OTHERDATA)
+    lib.graph(data)
 
 
 if __name__ == "__main__":
