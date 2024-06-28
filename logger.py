@@ -25,9 +25,14 @@ BAUDRATE = 115200
 X_LENGTH = 1801
 
 
-def save(data: list, filename: str):
+def save(data: np.array, filename: str):
     """
-    Save data in some way
+    Save data to a file.  Currently, converts to a Pandas
+    dataframe then saves as CSV.
+
+    Args:
+      data (np.array): data to save
+      filename (str): filename
     """
     # FIXME: Not really CSV
     df = pd.DataFrame(data)
@@ -36,7 +41,7 @@ def save(data: list, filename: str):
 
 
 # TODO: annotation for the ser variable
-def log_serial(ser):
+def log_serial(ser: serial.Serial) -> int:
     """
     Do the actual logging.
 
@@ -44,7 +49,11 @@ def log_serial(ser):
     - every line ends with '\r\n'
     - every line is a floating point number
 
-    returns: x_length, length of each line (eg, number of samples on
+    Args:
+      ser (serial.Serial): the serial port to open
+
+    returns:
+        x_length (int): length of each line (eg, number of samples on
     a single scan line)
     """
     last = 0
