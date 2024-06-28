@@ -70,7 +70,18 @@ def log_serial(ser):
     return x_length
 
 
-def log_xy_serial(ser, filename: str):
+def log_xy_serial(ser: serial.Serial, filename: str) -> np.array:
+    """
+    Log the xy data by putting it in a numpy array.  Save
+    it to a file every so often by saving it to a file.
+
+    Args:
+      ser (serial.Serial): serial port
+      filename (str): Filename to save to
+
+    Returns:
+      np.array: the data read from the camera
+    """
     count = 0
     while True:
         ser_bytes = ser.readline()
