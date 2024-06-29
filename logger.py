@@ -137,7 +137,10 @@ def main():
     try:
         # The firmware waits for input before continuing
         ser.write(bytes("\n", "utf-8"))
+        start = datetime.now()
         data = log_xy_serial(ser, filename)
+        end = datetime.now()
+        print(f"That took {(end - start).seconds} seconds")
         save(data, filename)
     except KeyboardInterrupt:
         save(data, filename)
