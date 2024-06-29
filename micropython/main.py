@@ -73,10 +73,10 @@ def move_y_and_read(s, x, dir: str = "up"):
     """
     if dir == "up":
         start = 0
-        end = MAX_Y + 1
+        end = MAX_Y
         step = 1
     elif dir == "down":
-        start = MAX_Y
+        start = MAX_Y -1
         end = -1
         step = -1
     else:
