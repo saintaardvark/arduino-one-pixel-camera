@@ -39,11 +39,17 @@ def get_s(
     return s
 
 
-def read_sensor(samples: int = 10):
+def read_sensor(samples: int = 10) -> float:
     """
     Read sensor value in range 0-65535.
 
-    Reads 10 times in quick succession and returns the mean.
+    Reads <sample> times in quick succession and returns the mean.
+
+    Args:
+      samples (int): how many samples to take
+
+    Returns:
+      float: mean of the samples
     """
     total = 0
     for i in range(samples):
