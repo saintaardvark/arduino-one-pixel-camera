@@ -110,6 +110,11 @@ def main():
             move_y_and_read(s, count, dir="up")
             x -= 1
             count += 1
+            if count >= MAX_X:
+                # Catch the case where MAX_X is set to an odd number;
+                # when that happens, count can go beyond it, and the
+                # logger will complain about out-of-bounds errors
+                break
             s.position(X_SERVO, x)
             move_y_and_read(s, count, dir="down")
             x -= 1
