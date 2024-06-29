@@ -8,9 +8,9 @@ from constants import X_SERVO, Y_SERVO
 
 SDA = Pin(22)
 SCL = Pin(23)
-SLEEPYTIME = 0.2
+SLEEPYTIME = 0.05
 MAX_X = 45
-MAX_Y = 45
+MAX_Y = 90
 
 sensor = ADC(Pin(4, Pin.IN))
 
@@ -89,7 +89,7 @@ def move_y_and_read(s, x, dir: str = "up"):
         raise ValueError(f"Unknown direction {dir}, should be either 'up' or 'down'")
     for y in range(start, end, step):
         s.position(Y_SERVO, y)
-        msm = read_sensor(samples=100)
+        msm = read_sensor(samples=10)
         msg = f"XXXXX {x} YYYYY {y} VAL {msm}"
         print(msg)
 
