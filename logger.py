@@ -37,7 +37,7 @@ def save(data: np.array, filename: str):
     # FIXME: Not really CSV
     df = pd.DataFrame(data)
     with open(filename, "w") as f:
-        df.to_csv(f)
+        df.to_csv(f, index_label=False)
 
 
 # TODO: annotation for the ser variable
