@@ -4,6 +4,8 @@ import matplotlib as mpl
 from matplotlib.colors import ListedColormap
 import numpy as np
 
+from .iqd import clamp_df
+
 
 # TODO: Look at
 # https://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
@@ -43,9 +45,14 @@ def compare(
     axs[0][1].set_title(title)
     axs[0][1].label_outer()
 
+    clamped_df = clamp_df(df)
+    axs[1][1].imshow(
+        clamped_df, cmap=cmap, norm=norm, origin="lower", interpolation=interp
+    )
+    axs[1][1].set_title("Clamped")
+
     flat_df = df.to_numpy().flatten()
     axs[1][0].hist(flat_df, bins=50, edgecolor="black")
-    axs[1][1].boxplot(flat_df)
     plt.show()
 
 
@@ -78,17 +85,17 @@ def munge(data: list, x: int = 100, reverse: bool = True):
 
     return n
 
+
 def avg_by_col(df: pd.DataFrame) -> pd.DataFrame:
     """Calculate averages of pairs of columns
-    Assuming you want to average consecutive pairs 
+    Assuming you want to average consecutive pairs
     (column 0 with column 1, column 2 with column 3, etc.)
     """
     num_columns = df.shape[1]
     averaged_df = pd.DataFrame()
-    
+
     for i in range(0, num_columns, 2):
         if i + 1 < num_columns:
             averaged_column = (df.iloc[:, i] + df.iloc[:, i + 1]) / 2
-            averaged_df[f'Averaged_{i}_{i+1}'] = averaged_column
+            averaged_df[f"Averaged_{i}_{i+1}"] = averaged_column
     return averaged_df
-

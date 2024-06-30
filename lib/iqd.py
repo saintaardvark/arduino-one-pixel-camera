@@ -26,12 +26,18 @@ def clamp_df(df: pd.DataFrame, f: float = IQD_FILTER_FOR_NORMAL_DIST) -> pd.Data
     flat_df = df.to_numpy().flatten()
     iqr_dist = iqd(flat_df)
     med = median(flat_df)
-    def _clamp(x):
-        if abs(x - med) > f * iqr_dist:
-            return 
-    return abs(m - med) > f * iqr_dist
 
-    return df.map(lambda x: ())
+    def _clamp(x):
+        high_iqr = med + f * iqr_dist
+        low_iqr = med - (f * iqr_dist)
+        if x > high_iqr:
+            return high_iqr
+        elif x < low_iqr:
+            return low_iqr
+        else:
+            return x
+
+    return df.map(_clamp)
 
 
 def is_outlier(
