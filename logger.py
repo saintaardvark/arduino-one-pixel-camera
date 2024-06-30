@@ -145,7 +145,7 @@ def main():
     except KeyboardInterrupt:
         save(data, filename)
     print(f"Data file: {filename}")
-    lib.graph(data)
+    lib.compare(pd.DataFrame(data).T)
 
 
 if __name__ == "__main__":
