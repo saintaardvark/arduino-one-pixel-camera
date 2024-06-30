@@ -99,7 +99,7 @@ def main():
                 # logger will complain about out-of-bounds errors
                 break
             s.position(X_SERVO, x)
-            move_y_and_read(s, count, dir="down")
+            move_y_and_read(s, count, dir="up")
             x -= 1
             count += 1
         print("END END END")
