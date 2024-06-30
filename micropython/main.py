@@ -1,18 +1,15 @@
-from machine import Pin, ADC, SoftI2C
+from machine import Pin, SoftI2C
 import sys
 from time import sleep
 from servo import Servos
-from test import test_y
 
-from constants import X_SERVO, Y_SERVO
+from constants import X_SERVO, Y_SERVO, MAX_X, MAX_Y, SLEEPYTIME
+from sensor import read_sensor
+import opctest
+
 
 SDA = Pin(22)
 SCL = Pin(23)
-SLEEPYTIME = 0.05
-MAX_X = 45
-MAX_Y = 90
-
-sensor = ADC(Pin(4, Pin.IN))
 
 
 def stop_x(s):
@@ -39,26 +36,6 @@ def get_s(
     return s
 
 
-def read_sensor(samples: int = 10) -> float:
-    """
-    Read sensor value in range 0-65535.
-
-    Reads <sample> times in quick succession and returns the mean.
-
-    Args:
-      samples (int): how many samples to take
-
-    Returns:
-      float: mean of the samples
-    """
-    total = 0
-    for i in range(samples):
-        total += sensor.read_u16()
-        sleep(SLEEPYTIME / samples)
-
-    return int(total / samples)
-
-
 def swing_x(s: Servos, degrees: int = 0, sleepytime: float = 0.2):
     """
     Swing just a little in the x direction
@@ -82,7 +59,7 @@ def move_y_and_read(s, x, dir: str = "up"):
         end = MAX_Y
         step = 1
     elif dir == "down":
-        start = MAX_Y -1
+        start = MAX_Y - 1
         end = -1
         step = -1
     else:
