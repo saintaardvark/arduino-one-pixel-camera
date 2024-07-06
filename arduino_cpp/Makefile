@@ -7,7 +7,8 @@ USER_LIB_PATH := /home/aardvark/Arduino/libraries
 # Libraries get listed here
 ARDUINO_LIBS = Adafruit_PWM_Servo_Driver_Library \
 		Adafruit_BusIO \
-		Wire
+		Wire \
+		SPI
 
 ARDMK_DIR     = /home/aardvark/dev/src/github.com/sudar/Arduino-Makefile
 
