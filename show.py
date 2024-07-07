@@ -22,12 +22,20 @@ def show():
     pass
 
 
+def compare(filename: str):
+    """
+    display
+    """
+    df = pd.read_csv(filename)
+    lib.compare(df.T,)
+
+
 def display(filename: str):
     """
     display
     """
     df = pd.read_csv(filename)
-    lib.compare(df.T)
+    lib.graph(df.T, norm="log")
 
 
 @click.command()
@@ -36,7 +44,7 @@ def latest(directory):
     # Ensure the directory path ends with a slash
     list_of_files = glob.glob(f"{directory}/*.csv")
     latest_file = max(list_of_files, key=os.path.getctime)
-    display(latest_file)
+    compare(latest_file)
 
 
 @click.command()
@@ -46,6 +54,7 @@ def file(filename):
 
 show.add_command(latest)
 show.add_command(file)
+
 
 def main():
     """
