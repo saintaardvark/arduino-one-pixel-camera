@@ -10,7 +10,9 @@ from .iqd import clamp_df
 # TODO: Look at
 # https://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
 # for live plotting options.
-def graph(data: np.array, cmap: str = "gray", norm: str = "linear"):
+def graph(
+    data: np.array, cmap: str = "gray", norm: str = "linear", interp: str = "bicubic"
+):
     """
     Graph data in some way.  Args:
 
@@ -21,7 +23,7 @@ def graph(data: np.array, cmap: str = "gray", norm: str = "linear"):
     Normalize classes not supported.
     """
     print(f"Here's a graph!")
-    plt.imshow(data, cmap=cmap, norm=norm, origin="lower")
+    plt.imshow(data, cmap=cmap, norm=norm, origin="lower", interpolation=interp)
     # plt.gca().set_aspect("equal")  # show square as square
     plt.show()
 
