@@ -1,6 +1,6 @@
 Y_SERVO = 1
 X_SERVO = 0
-MAX_X = 45
+MAX_X = 90
 MAX_Y = 90
 
 SLEEPYTIME = 0.05
