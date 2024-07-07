@@ -90,7 +90,7 @@ def main():
             s.position(X_SERVO, x)
             # Sweep up x 0 to 90, taking measurements
             # print(f"Y iteration {y} of {MAX_Y_SWINGS}")
-            move_y_and_read(s, count, dir="up")
+            move_y_and_read(s, count, dir="down")
             x -= 1
             count += 1
             if count >= MAX_X:
@@ -99,7 +99,7 @@ def main():
                 # logger will complain about out-of-bounds errors
                 break
             s.position(X_SERVO, x)
-            move_y_and_read(s, count, dir="up")
+            move_y_and_read(s, count, dir="down")
             x -= 1
             count += 1
         print("END END END")
