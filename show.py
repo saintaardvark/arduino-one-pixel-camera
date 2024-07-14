@@ -13,6 +13,8 @@ import pandas as pd
 
 import lib
 
+DEFAULT_DIR = "data"
+
 
 @click.group()
 def show():
@@ -22,38 +24,90 @@ def show():
     pass
 
 
-def compare(filename: str):
+def compare_file(filename: str, clamp=True):
     """
-    display
-    """
-    df = pd.read_csv(filename)
-    lib.compare(df.T,)
-
-
-def display(filename: str):
-    """
-    display
+    Show comparison for a file
     """
     df = pd.read_csv(filename)
+    if clamp:
+        df = lib.clamp(df)
+    lib.compare(
+        df.T,
+    )
+
+
+def display_file(filename: str, clamp=True):
+    """
+    Display a file
+    """
+    df = pd.read_csv(filename)
+    if clamp:
+        df = lib.clamp_df(df)
     lib.graph(df.T, norm="log")
 
 
-@click.command()
-@click.option("--directory", default="data")
-def latest(directory):
-    # Ensure the directory path ends with a slash
+def find_latest(directory) -> str:
+    """
+    Find the latest file in directory.
+
+    Args:
+      directory (str): directory to search
+
+    Returns:
+      str: name of the file with the latest ctime
+    """
     list_of_files = glob.glob(f"{directory}/*.csv")
-    latest_file = max(list_of_files, key=os.path.getctime)
-    compare(latest_file)
+    return max(list_of_files, key=os.path.getctime)
 
 
 @click.command()
-@click.option("--filename")
-def file(filename):
-    display(filename)
+@click.argument("filename")
+@click.option("--directory", default=DEFAULT_DIR)
+@click.option(
+    "--latest/--no-latest",
+    default=False,
+    help=f"Show latest file in directory (default: {DEFAULT_DIR})",
+)
+@click.option(
+    "--clamp/--no-clamp",
+    default=False,
+    help=f"Clamp data for better appearance",
+)
+def display(filename, directory, latest, clamp):
+    """
+    Display a given filename
+    """
+    if filename:
+        display_file(filename, clamp)
+    elif latest:
+        display_file(find_latest(directory), clamp)
 
-show.add_command(latest)
-show.add_command(file)
+
+@click.command()
+@click.argument("filename")
+@click.option("--directory", default=DEFAULT_DIR)
+@click.option(
+    "--latest/--no-latest",
+    default=False,
+    help=f"Show latest file in directory (default: {DEFAULT_DIR})",
+)
+@click.option(
+    "--clamp/--no-clamp",
+    default=False,
+    help=f"Clamp data for better appearance",
+)
+def compare(filename, directory, latest, clamp):
+    """
+    Show comparisons for given filename
+    """
+    if filename:
+        compare_file(filename, clamp)
+    elif latest:
+        compare_file(find_latest(directory), clamp)
+
+
+show.add_command(display)
+show.add_command(compare)
 
 
 def main():
