@@ -41,6 +41,8 @@ def compare(
     interp: str = "bicubic",
 ):
     """Compare plot of df vs the original"""
+    BINS = "auto"
+    clamped_df = clamp_df(df)
     fig, axs = plt.subplots(2, 2)
     fig.suptitle("Comparison")
 
@@ -48,18 +50,18 @@ def compare(
     axs[0][0].set_title("Original")
     axs[0][0].label_outer()
 
-    axs[0][1].imshow(df, cmap=cmap, norm=norm, origin="lower", interpolation=interp)
-    axs[0][1].set_title(title)
-    axs[0][1].label_outer()
-
-    clamped_df = clamp_df(df)
-    axs[1][1].imshow(
+    axs[0][1].imshow(
         clamped_df, cmap=cmap, norm=norm, origin="lower", interpolation=interp
     )
     axs[1][1].set_title("Clamped")
 
     flat_df = df.to_numpy().flatten()
-    axs[1][0].hist(flat_df, bins=50, edgecolor="black")
+    axs[1][0].hist(df, bins=BINS, edgecolor="black")
+    axs[1][0].set_title("Histogram (original)")
+
+    axs[1][1].hist(clamped_df, bins=BINS, edgecolor="black")
+    axs[1][1].set_title("Histogram (clamped)")
+
     plt.show()
 
 
