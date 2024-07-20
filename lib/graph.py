@@ -11,7 +11,11 @@ from .iqd import clamp_df
 # https://stackoverflow.com/questions/28269157/plotting-in-a-non-blocking-way-with-matplotlib
 # for live plotting options.
 def graph(
-    data: np.array, cmap: str = "gray", norm: str = "linear", interp: str = "bicubic"
+    data: np.array,
+    cmap: str = "gray",
+    norm: str = "linear",
+    interp: str = "bicubic",
+    png_file=None,
 ):
     """
     Graph data in some way.  Args:
@@ -22,10 +26,11 @@ def graph(
     norm: string of name of normalize for pcolormesh;
     Normalize classes not supported.
     """
-    print(f"Here's a graph!")
     plt.imshow(data, cmap=cmap, norm=norm, origin="lower", interpolation=interp)
-    # plt.gca().set_aspect("equal")  # show square as square
-    plt.show()
+    if png_file:
+        plt.savefig(png_file)
+    else:
+        plt.show()
 
 
 def compare(
