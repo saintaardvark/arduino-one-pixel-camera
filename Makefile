@@ -3,10 +3,10 @@ RSHELL=rshell --port $(DEV)
 RSYNC_FLAGS?=
 MODEM_SPEED=115200
 
-log:
+log: venv
 	$(VENV)/python ./logger.py
 
-jl:
+jl: venv
 	$(VENV)/jupyter-lab
 
 # --mirror: delete files on board that are not in source dir
