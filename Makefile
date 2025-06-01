@@ -33,4 +33,8 @@ kill_console:
 reset:
 	$(RSHELL) repl pyboard "~ import machine ~ machine.reset()~"
 
+# Handy target to let you browse through images taken today
+today: venv
+	$(VENV)/python ./show.py display --filename `find data -type f -name \*csv -mtime -1 | fzf`
+
 include Makefile.venv
